@@ -1,5 +1,5 @@
 import { sveltekit } from '@sveltejs/kit/vite';
-
+//
 /**
  * Make a little plugin that checks for locale file changes and fires an event.
  * The event is handled in database.ts, where locales are cached.
