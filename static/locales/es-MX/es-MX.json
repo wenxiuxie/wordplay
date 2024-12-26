@@ -127,8 +127,7 @@
                 "Puedo combinar con \\/\\ para formar unidades de proporción, como \\17manzanas/día\\ y con \\^\\ para formar unidades exponenciales como \\9.8m/s^2\\.",
                 "Siempre debo ir después de @Number. Si no lo hago, podrían confudirme con @Reference, ¡lo cual sería bastantate embarazoso!",
                 "Siempre debo ir después de @Number. Si no lo hago, podrían confudirme con @Reference, ¡lo cual sería bastantate embarazoso!",
-                "También soy bastante bueno para encontrar inconsistencies entre unidades. Por ejemplo, !\\1gato + 1perro\\ no tiene ningún sentido!",
-                "Si alguna vez deseas convertir entre diferentes valores de unidades, hable con @Convert."
+                "También soy bastante bueno para encontrar inconsistencies entre unidades. Por ejemplo, !\\1gato + 1perro\\ no tiene ningún sentido!"
             ]
         },
         "Doc": {
@@ -4031,7 +4030,8 @@
                 "output": "escenario",
                 "palette": "paleta",
                 "docs": "guía",
-                "source": "$source"
+                "source": "$source",
+                "collaborate": "$~colaborar"
             },
             "button": {
                 "collapse": "colapsar esta ventana"
@@ -4040,7 +4040,9 @@
         "project": {
             "error": {
                 "unknown": "Esta actuación no existe o no es pública.",
-                "translate": "$~Hubo un problema al traducir tu proyecto."
+                "translate": "$~Hubo un problema al traducir tu proyecto.",
+                "tile": "$~Ups, hubo un error.",
+                "reset": "$~Intentar reiniciar..."
             },
             "button": {
                 "showCollaborators": "mostrar a los colaboradores el diálogo",
@@ -4309,10 +4311,6 @@
                 "header": "Compartir",
                 "explanation": "Controla quién puede editar y ver este proyecto.",
                 "subheader": {
-                    "collaborators": {
-                        "header": "Colaboradores",
-                        "explanation": "Los colaboradores pueden ver y editar este proyecto. Sólo los propietarios del proyecto pueden modificar a los colaboradores."
-                    },
                     "gallery": {
                         "header": "Galería",
                         "explanation": "Agrega este proyecto a una galería junto con otros creadores, o crea una galería en tu página de <projects@://projects>. Si añades un proyecto a una galería pública, tu proyecto se volverá público."
@@ -4417,7 +4415,8 @@
                 },
                 "options": {
                     "mic": "micrófono seleccionado",
-                    "camera": "cámara seleccionada "
+                    "camera": "cámara seleccionada ",
+                    "face": "$~tipo de fuente"
                 }
             },
             "locale": {
@@ -4530,8 +4529,7 @@
                     "• Gratis para siempre de la Universidad de Washington↗."
                 ],
                 "beta": [
-                    "Wordplay está en *beta*. Esto significa que la funcionalidad puede cambiar o no funcionar como se espera.",
-                    "¡Pero también significa que queremos tus comentarios! Informa sobre errores y comparte ideas en <Discord@https://discord.gg/Jh2Qq9husy>, o <GitHub@https://github.com/wordplaydev/wordplay/issues>. Consulta nuestros <planes 1.0@https://github.com/wordplaydev/wordplay/milestones/1.0> y <contribuir@https://github.com/wordplaydev/wordplay/wiki/contribute> si puedes hacerlo."
+                    "Wordplay está en *beta*. Esto significa que la funcionalidad puede cambiar o no funcionar como se espera."
                 ],
                 "link": {
                     "about": "¿Por qué existe este lugar?",
@@ -4621,10 +4619,8 @@
             },
             "login": {
                 "header": "Iniciar sesión",
-                "subtitle": "Crea una cuenta o inicie sesión para guardar tu trabajo en línea",
                 "anonymous": "iniciar sesión",
                 "prompt": {
-                    "login": "Tus actuaciones se estan guardano en este navegador, pero no en línea. Si este es tu dispositivo, ¡está bien! Si no es así, otros tendrán acceso a tus proyectos y es posible que los pierdas. Para guardarlos en línea y mantenerlos privados, inicie sesión o <cree una cuenta@://join>:",
                     "forgot": "*¿Olvidaste tu contraseña?* Desafortunadamente, no podemos recuperar tu cuenta ya que no recopilamos información de contacto.",
                     "enter": "Parece que tu enlace de inicio de sesión vino de un navegador o dispositivo diferente. ¿Puedes ingresar tu correo electrónico nuevamente, solo para estar seguros de que eres tú?",
                     "play": "Estás conectado, ¡podemos guardar tus proyectos en línea ahora! ¿Quieres crear algo?",
@@ -4640,7 +4636,9 @@
                     "confirm": "Revisa tu antigua dirección de correo electrónico para confirmar tu nueva dirección.",
                     "delete": "¿Quieres que olvidemos todo lo que has creado aquí? Esto no se puede deshacer.",
                     "reallyDelete": "¿Estás segura? Tu cuenta y configuraciones se eliminarán inmediatamente, y tus proyectos se programarán para su eliminación. Las colaboradoras en tus proyectos perderán de inmediato el acceso a ellos. Escribe tu correo electrónico o nombre de usuario para confirmar que esto es lo que deseas.",
-                    "name": "Elige un emoji para representarte a ti mismo ante los demás."
+                    "name": "Elige un emoji para representarte a ti mismo ante los demás.",
+                    "login": "$~Inicie sesión para guardar sus proyectos, colaborar y compartir:",
+                    "join": "$~O bien, <crear una cuenta@://unirse> para comenzar."
                 },
                 "error": {
                     "expired": "Este enlace ha expirado.",
@@ -4703,13 +4701,15 @@
                         "on": "Mostrar contraseña",
                         "off": "Ocultar contraseña"
                     }
-                }
+                },
+                "subtitle": "$~Guardar, colaborar y compartir"
             },
             "join": {
                 "header": "Unirse",
                 "prompt": {
-                    "username": "¿Lista para crear una cuenta? Primero, elige un *nombre de usuario*. Debe tener al menos 5 caracteres, no puede ser una dirección de correo electrónico y no debe contener tu nombre ni otra información identificativa.",
-                    "password": "Elige una contraseña con al menos *10 caracteres*. Ingrésala nuevamente para asegurarte de que la hayas escrito correctamente y guárdala en un lugar seguro, como un administrador de contraseñas. *No hay forma de recuperar tu cuenta* si la pierdes, ya que no recopilamos información de contacto."
+                    "create": "$~Crea una cuenta para guardar tus proyectos, colaborar con otros y compartir tu trabajo.",
+                    "username": "$~Los nombres de usuario deben tener al menos /5 caracteres/, no pueden ser un correo electrónico y no deben contener su nombre u otra información de identificación.",
+                    "password": "$~Las contraseñas deben tener al menos 10 caracteres. Escríbalas dos veces y anótelas en un lugar seguro, como un administrador de contraseñas. *No hay forma de recuperar su cuenta* si la pierde, ya que no recopilamos información de contacto."
                 }
             },
             "rights": {
@@ -4773,6 +4773,43 @@
         "template": {
             "unwritten": "Por determinar",
             "unparsable": "Plantilla no analizable: $1"
+        },
+        "collaborate": {
+            "label": "$~colaborar",
+            "role": {
+                "owner": "$~dueño",
+                "collaborators": "$~colaboradores",
+                "curators": "$~curadores"
+            },
+            "field": {
+                "message": {
+                    "description": "$~El mensaje de chat para enviar",
+                    "placeholder": "$~Escribe un mensaje"
+                }
+            },
+            "button": {
+                "submit": {
+                    "label": "$~Enviar",
+                    "tip": "$~Envía un mensaje a tus colaboradores"
+                },
+                "start": {
+                    "label": "$~Iniciar un chat",
+                    "tip": "$~Inicie una discusión con usted mismo o con otros."
+                },
+                "delete": "$~eliminar este mensaje"
+            },
+            "error": {
+                "unowned": "$~Este proyecto no tiene propietario, por lo que no puede tener un chat.",
+                "offline": "$~No se puede cargar este chat.",
+                "empty": "$~No hay mensajes.",
+                "deleted": "$~Este mensaje fue eliminado."
+            },
+            "prompt": {
+                "solo": "$~Chatea contigo mismo o agrega un colaborador, que pueda editar y chatear.",
+                "owner": "$~Los colaboradores pueden editar este proyecto y chatear sobre él.",
+                "collaborator": "$~Eres colaborador. Puedes editar este proyecto y conversar sobre él.",
+                "curator": "$~Eres el curador de la galería de este proyecto. Puedes editarlo y conversar sobre él."
+            }
         }
     },
     "moderation": {

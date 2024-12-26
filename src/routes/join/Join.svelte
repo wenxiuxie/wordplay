@@ -9,25 +9,25 @@
     import { Creator } from '@db/CreatorDatabase';
     import Spinning from '@components/app/Spinning.svelte';
     import Button from '@components/widgets/Button.svelte';
-    import Header from '@components/app/Header.svelte';
     import isValidUsername from '@db/isValidUsername';
     import { goto } from '$app/navigation';
     import { httpsCallable } from 'firebase/functions';
     import Feedback from '@components/app/Feedback.svelte';
     import MarkupHtmlView from '@components/concepts/MarkupHTMLView.svelte';
     import Toggle from '@components/widgets/Toggle.svelte';
+    import Header from '@components/app/Header.svelte';
 
-    let username = '';
-    let password = '';
-    let password2 = '';
-    let available: undefined | boolean = undefined;
-    let reveal = false;
+    let username = $state('');
+    let password = $state('');
+    let password2 = $state('');
+    let available: undefined | boolean = $state(undefined);
+    let reveal = $state(false);
 
     /** When true, login submission button shows loading spinner */
-    let loading = false;
+    let loading = $state(false);
 
     /** Feedback to show in the login form */
-    let feedback: string | undefined = undefined;
+    let feedback: string | undefined = $state(undefined);
 
     function createAccountFormComplete() {
         return (
@@ -77,6 +77,11 @@
 
 <LoginForm submit={createAccount} {feedback}>
     <MarkupHtmlView
+        markup={$locales.get((l) => l.ui.page.join.prompt.create)}
+    />
+
+    <MarkupHtmlView
+        note
         markup={$locales.get((l) => l.ui.page.join.prompt.username)}
     />
 
@@ -99,6 +104,7 @@
     {/if}
 
     <MarkupHtmlView
+        note
         markup={$locales.get((l) => l.ui.page.join.prompt.password)}
     />
     <p class="center">

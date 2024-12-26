@@ -5,19 +5,27 @@
     import { locales } from '@db/Database';
     import type Project from '../../models/Project';
     import Emoji from '@components/app/Emoji.svelte';
-    import TileSymbols from './TileSymbols';
+    import TileKinds from './TileKinds';
+    import { TYPE_SYMBOL } from '@parser/Symbols';
 
-    export let project: Project;
-    export let tile: Tile;
+    interface Props {
+        project: Project;
+        tile: Tile;
+        notification?: boolean;
+    }
+
+    let { project, tile, notification = false }: Props = $props();
 
     const dispatch = createEventDispatcher();
 </script>
 
 <Toggle
     uiid="{tile.id}Expand"
+    testid="{tile.id}-toggle"
     tips={$locales.get((l) => l.ui.tile.toggle.show)}
     on={tile.isExpanded()}
     toggle={() => dispatch('toggle')}
-    ><Emoji>{TileSymbols[tile.kind]}</Emoji>
+    highlight={notification}
+    ><Emoji>{TileKinds[tile.kind].symbol}</Emoji>
     {tile.getName(project, $locales)}</Toggle
 >

@@ -18,12 +18,16 @@
     import Feedback from '@components/app/Feedback.svelte';
     import { get } from 'svelte/store';
     import Subheader from '@components/app/Subheader.svelte';
-    import { COPY_SYMBOL, EDIT_SYMBOL } from '../../parser/Symbols';
+    import {
+        CANCEL_SYMBOL,
+        COPY_SYMBOL,
+        EDIT_SYMBOL,
+    } from '../../parser/Symbols';
     import AddProject from '@components/app/AddProject.svelte';
 
     const user = getUser();
 
-    let newGalleryError = false;
+    let newGalleryError = $state(false);
     async function newGallery() {
         newGalleryError = false;
         try {
@@ -35,11 +39,8 @@
         }
     }
 
-    const status = Galleries.status;
-    const galleries = Galleries.creatorGalleries;
-
     // Whether to show an error
-    let deleteError = false;
+    let deleteError = $state(false);
 </script>
 
 <svelte:head>
@@ -139,7 +140,7 @@
                                   console.error(error);
                               }
                           },
-                          label: '⨉',
+                          label: CANCEL_SYMBOL,
                       }
                     : false}
         />
@@ -164,26 +165,26 @@
                 )}</Feedback
             >
         {/if}
-        {#if $status === 'loading'}
+        {#if Galleries.getStatus() === 'loading'}
             <Spinning
                 label={$locales.get((l) => l.ui.widget.loading.message)}
                 large
             />
-        {:else if $status === 'noaccess'}
+        {:else if Galleries.getStatus() === 'noaccess'}
             <Feedback
                 >{$locales.get(
                     (l) => l.ui.page.projects.error.noaccess,
                 )}</Feedback
             >
-        {:else if $status === 'loggedout'}
+        {:else if Galleries.getStatus() === 'loggedout'}
             <Feedback
                 >{$locales.get(
                     (l) => l.ui.page.projects.error.nogalleryedits,
                 )}</Feedback
             >
         {:else}
-            {#each $galleries.values() as gallery, index}
-                <GalleryPreview gallery={get(gallery)} delay={index * 1000} />
+            {#each Galleries.accessibleGalleries.values() as gallery, index}
+                <GalleryPreview {gallery} delay={index * 1000} />
             {/each}
         {/if}
     {:else}

@@ -1,5 +1,5 @@
 {
-    "$schema": "../../schemas/Locale.json",
+    "$schema": "../../schemas/LocaleText.json",
     "language": "de",
     "region": "DE",
     "wordplay": "Wordplay",
@@ -95,7 +95,7 @@
         "Select": "wählen",
         "Insert": "einfügen",
         "Update": "updaten",
-        "Delete": "löschen",  
+        "Delete": "löschen",
         "Union": "Union",
         "Stream": "Datenstrom",
         "Change": "verändern",
@@ -453,7 +453,8 @@
                 "ExpectedEndingExpression": "$~Ich brauche einen Ausdruck.",
                 "IgnoredExpression": {
                     "primary": "$~Ich werde das oben Gesagte ignorieren.",
-                    "secondary": "$~@Block, ignorier mich nicht!"
+                    "secondary": "$~@Block, ignorier mich nicht!",
+                    "resolution": "$~Meinten Sie, dass dies ein @BinaryEvaluate statt eines @UnaryEvaluate sein sollte? Ich kann ein Leerzeichen hinzufügen, damit ich weiß, dass Sie das gemeint haben."
                 }
             }
         },
@@ -959,7 +960,10 @@
             ],
             "start": "$~welchen Wert hat 1 $?",
             "conflict": {
-                "UnknownName": "$~$1[Ich kenne niemanden namens $1 in $2[$2|diesem @Block]|Kannst du mir einen Namen geben?]",
+                "UnknownName": {
+                    "conflict": "$~$1[Ich kenne niemanden namens $1 in $2[$2|diesem @Block]|Kannst du mir einen Namen geben?]",
+                    "resolution": "$!"
+                },
                 "ReferenceCycle": "$~ähm, der Wert von 1 $ hängt von ihm selbst ab. Woher weiß ich also, welchen Wert ich ihm zuweisen soll?",
                 "UnexpectedTypeVariable": "$~Ich weiß nicht, was ich mit diesen Eingabetypen machen soll"
             },
@@ -3227,7 +3231,10 @@
                 "$~SIE KÖNNEN MIR AUCH EINEN RAHMENRAND GEBEN UND ICH WERDE IHN ZUSCHNEIDEN.",
                 "$~\\Stage([Phrase('stufffffff')] Hintergrund: Farbe(75% 50 100°) Rahmen: Rechteck(-1m -1m 1m 1m))\\"
             ],
-            "description": "$~Stufe $1[$1|] von $2[$2|] Sätzen $3[$3 Rahmen|] $4",
+            "description": {
+                "names": "$!",
+                "doc": "$!"
+            },
             "content": {
                 "doc": "$~Die Liste der auf der Bühne anzuzeigenden @Outputs.",
                 "names": "$~Inhalt"
@@ -3315,7 +3322,8 @@
             "gravity": {
                 "doc": "$~Die Schwerkraft, die auf die Ausgabe angewendet werden soll, deren Platz in @Motion ist.",
                 "names": "$~Schwere"
-            }
+            },
+            "defaultDescription": "$~Stufe $2[$2 |]von $1 gibt $3 aus[mit Rahmen $3|] $4"
         },
         "Group": {
             "names": ["$~🔳", "$~Gruppe"],
@@ -3327,7 +3335,10 @@
                 "$~\\Gruppe(Stapel() [Phrase('erste') Phrase('zweite')])\\",
                 "$~Wie ich die Dinge genau arrangiere, hängt von dem @Arrangement ab, das Sie mir geben."
             ],
-            "description": "$~$1[$1|] $2 $3",
+            "description": {
+                "names": "$!",
+                "doc": "$!"
+            },
             "content": {
                 "doc": "$~Die Liste der anzuordnenden @Outputs.",
                 "names": "$~Inhalt"
@@ -3415,12 +3426,16 @@
             "style": {
                 "doc": "$~Dasselbe wie @Phrase/Stil!",
                 "names": "$~Stil"
-            }
+            },
+            "defaultDescription": "$~$1[$1|] $2 $3"
         },
         "Phrase": {
             "names": ["💬", "Satzglied"],
             "doc": "Hallo, hallo? Erinnerst du mich? Wie könnte jemand /mich/ vergessen? Ich bin das geniale @Phrase und ich bin bereit, die schönste aller @Text auf der Bühne zu darstellen.",
-            "description": "$~$3[$3 Takt |]Phrase $1 $2[benannt $2|] $4[$4|] $5",
+            "description": {
+                "names": "$!",
+                "doc": "$!"
+            },
             "text": {
                 "doc": "$~Die auf @Stage anzuzeigenden Charaktere.",
                 "names": "$~Text"
@@ -3526,7 +3541,8 @@
             "style": {
                 "doc": "$~Der zu verwendende Animationsstil beim Wechsel an eine andere Stelle auf der Bühne.",
                 "names": "$~Stil"
-            }
+            },
+            "defaultDescription": "$~$3[$3 Takt |]Phrase $1 $2[benannt $2|] $4[$4|] $5"
         },
         "Arrangement": {
             "names": ["Arrangement"],
@@ -3661,6 +3677,12 @@
             "style": {
                 "doc": "$~Der Animationsstil, den ich verwenden sollte.",
                 "names": "$~Stil"
+            },
+            "description": {
+                "doc": [
+                    "$~Eine Beschreibung für Zuschauer, die keine visuelle Ausgabe sehen können."
+                ],
+                "names": "$~Beschreibung"
             }
         },
         "Form": {
@@ -4033,7 +4055,8 @@
                 "output": "$~Bühne",
                 "palette": "$~Palette",
                 "docs": "$~Führung",
-                "source": "$~Quelle"
+                "source": "$~Quelle",
+                "collaborate": "$~zusammenarbeiten"
             },
             "button": {
                 "collapse": "$~Fenster ausblenden"
@@ -4042,7 +4065,9 @@
         "project": {
             "error": {
                 "unknown": "$~Dieses Projekt existiert nicht oder ist nicht öffentlich.",
-                "translate": "$~Beim Übersetzen Ihres Projekts ist ein Problem aufgetreten."
+                "translate": "$~Beim Übersetzen Ihres Projekts ist ein Problem aufgetreten.",
+                "tile": "$~Hoppla, da ist ein Fehler aufgetreten.",
+                "reset": "$~Versuch zum Zurücksetzen..."
             },
             "button": {
                 "showCollaborators": "$~Dialog für Mitarbeiter anzeigen",
@@ -4224,7 +4249,8 @@
                 "redo": "$~Rückgängig gemachte Bearbeitung wiederholen",
                 "search": "$~Suche nach einzufügenden Sonderzeichen",
                 "tidy": "$~ordentlicher Abstand",
-                "elide": "$~Elision umschalten"
+                "elide": "$~Elision umschalten",
+                "insertDocs": "$~Erklärungssymbol einfügen"
             }
         },
         "annotations": {
@@ -4262,6 +4288,9 @@
             },
             "button": {
                 "submit": "$~diese Chat-Nachricht senden"
+            },
+            "options": {
+                "locale": "$~Wählen Sie die Sprache für die Ausgabe"
             }
         },
         "timeline": {
@@ -4307,10 +4336,6 @@
                 "header": "$~Weitergabe",
                 "explanation": "$~Steuern Sie, wer dieses Projekt bearbeiten und sehen kann.",
                 "subheader": {
-                    "collaborators": {
-                        "header": "$~Kooperationspartner",
-                        "explanation": "$~Mitarbeiter können dieses Projekt anzeigen und bearbeiten. Nur Projektbesitzer können Mitarbeiter ändern."
-                    },
                     "gallery": {
                         "header": "$~Galerie",
                         "explanation": "$~Fügen Sie dieses Projekt einer Galerie neben anderen Erstellern hinzu oder erstellen Sie eine Galerie auf Ihrer Seite <projects@://projects>. Wenn Sie ein Projekt einer öffentlichen Galerie hinzufügen, wird Ihr Projekt öffentlich."
@@ -4407,11 +4432,19 @@
                             "$~Code lokalisieren, wenn verfügbar",
                             "$~Code lokalisieren, aber Symbole bevorzugen"
                         ]
+                    },
+                    "lines": {
+                        "label": "$~Zeilennummern",
+                        "modes": [
+                            "$~Zeilennummern im Textmodus anzeigen",
+                            "$~Zeilennummern im Textmodus nicht anzeigen"
+                        ]
                     }
                 },
                 "options": {
                     "mic": "$~ausgewähltes Mikrofon",
-                    "camera": "$~ausgewählte Kamera"
+                    "camera": "$~ausgewählte Kamera",
+                    "face": "$~Schriftart"
                 }
             },
             "locale": {
@@ -4610,10 +4643,8 @@
             },
             "login": {
                 "header": "Anmeldung",
-                "subtitle": "$~Erstellen Sie ein Konto oder melden Sie sich an, um Ihre Arbeit online zu speichern",
                 "anonymous": "Anmeldung",
                 "prompt": {
-                    "login": "$~Ihre Performances werden in diesem Browser gespeichert, aber nicht online. Wenn dies Ihr Gerät ist, ist das in Ordnung! Wenn nicht, haben andere Zugriff auf Ihre Projekte und Sie könnten sie verlieren. Um sie online zu speichern und privat zu halten, melden Sie sich an oder <erstellen Sie ein Konto@://join>:",
                     "forgot": "$~*Passwort vergessen?* Leider können wir Ihr Konto nicht wiederherstellen, da wir keine Kontaktinformationen erfassen.",
                     "email": "$~Haben Sie ein Nur-E-Mail-Konto? Melden Sie sich an, indem Sie Ihre E-Mail-Adresse angeben. Wenn ein Konto damit verknüpft ist, senden wir Ihnen eine E-Mail mit einem Anmeldelink. Neue Nur-E-Mail-Konten werden aus Datenschutzgründen nicht unterstützt.",
                     "enter": "$~Offenbar stammt Ihr Anmeldelink von einem anderen Browser oder Gerät. Können Sie Ihre E-Mail-Adresse noch einmal eingeben, damit wir sicher sind, dass Sie es sind?",
@@ -4629,7 +4660,9 @@
                     "confirm": "$~Überprüfen Sie Ihre alte E-Mail-Adresse, um Ihre neue Adresse zu bestätigen.",
                     "delete": "$~Möchten Sie, dass wir alles vergessen, was Sie hier gemacht haben? Dies kann nicht rückgängig gemacht werden.",
                     "reallyDelete": "$~Sind Sie sicher? Ihr Konto und Ihre Einstellungen werden sofort gelöscht und Ihre Projekte werden zur Löschung vorgemerkt. Mitarbeiter Ihrer Projekte verlieren sofort den Zugriff darauf. Geben Sie Ihre E-Mail-Adresse oder Ihren Benutzernamen ein, um zu bestätigen, dass Sie dies wünschen.",
-                    "name": "$~WählenSieeinEmojiaus,umsichanderenvorzustellen."
+                    "name": "$~WählenSieeinEmojiaus,umsichanderenvorzustellen.",
+                    "login": "$~Melden Sie sich an, um Ihre Projekte zu speichern, zusammenzuarbeiten und sie zu teilen:",
+                    "join": "$~Oder <create an account@://join>, um zu beginnen."
                 },
                 "error": {
                     "expired": "$~Dieser Link ist abgelaufen.",
@@ -4692,13 +4725,15 @@
                         "on": "$~Passwort anzeigen",
                         "off": "$~Passwort verbergen"
                     }
-                }
+                },
+                "subtitle": "$~Speichern, zusammenarbeiten und teilen"
             },
             "join": {
                 "header": "$~Verbinden",
                 "prompt": {
-                    "username": "$~Bereit, ein Konto zu erstellen? Wählen Sie zunächst einen *Benutzernamen*. Er muss mindestens 5 Zeichen lang sein, darf keine E-Mail-Adresse sein und sollte weder Ihren Namen noch andere identifizierende Informationen enthalten.",
-                    "password": "$~Wählen Sie ein Passwort mit mindestens *10 Zeichen*. Geben Sie es erneut ein, um sicherzustellen, dass Sie es richtig eingegeben haben, und speichern Sie es an einem sicheren Ort, beispielsweise in einem Passwort-Manager. *Es gibt keine Möglichkeit, Ihr Konto wiederherzustellen*, wenn Sie es verlieren, da wir keine Kontaktinformationen erfassen."
+                    "create": "$~Erstellen Sie ein Konto, um Ihre Projekte zu speichern, mit anderen zusammenzuarbeiten und Ihre Arbeit zu teilen.",
+                    "username": "$~Benutzernamen müssen mindestens 5 Zeichen lang sein, dürfen keine E-Mail-Adresse sein und dürfen weder Ihren Namen noch andere identifizierende Informationen enthalten.",
+                    "password": "$~Passwörter müssen mindestens /10 Zeichen/ lang sein. Geben Sie es zweimal ein und notieren Sie es an einem sicheren Ort, z. B. in einem Passwortmanager. *Es gibt keine Möglichkeit, Ihr Konto wiederherzustellen*, wenn Sie es verlieren, da wir keine Kontaktinformationen erfassen."
                 }
             },
             "rights": {
@@ -4766,6 +4801,43 @@
         "template": {
             "unwritten": "$~Wird noch bekannt gegeben",
             "unparsable": "$~Nicht analysierbare Vorlage: $1"
+        },
+        "collaborate": {
+            "label": "$~zusammenarbeiten",
+            "role": {
+                "owner": "$~Eigentümer",
+                "collaborators": "$~Mitarbeiter",
+                "curators": "$~Kuratoren"
+            },
+            "field": {
+                "message": {
+                    "description": "$~Die zu übermittelnde Chat-Nachricht",
+                    "placeholder": "$~Geben Sie eine Nachricht ein"
+                }
+            },
+            "button": {
+                "submit": {
+                    "label": "$~Schicken",
+                    "tip": "$~Senden Sie eine Nachricht an Ihre Mitarbeiter"
+                },
+                "start": {
+                    "label": "$~Einen Chat starten",
+                    "tip": "$~Beginnen Sie eine Diskussion mit sich selbst oder anderen."
+                },
+                "delete": "$~diese Nachricht löschen"
+            },
+            "error": {
+                "unowned": "$~Dieses Projekt hat keinen Eigentümer, daher ist kein Chat möglich.",
+                "offline": "$~Dieser Chat konnte nicht geladen werden.",
+                "empty": "$~Keine Nachrichten.",
+                "deleted": "$~Diese Nachricht wurde gelöscht."
+            },
+            "prompt": {
+                "solo": "$~Chatten Sie mit sich selbst oder fügen Sie einen Mitarbeiter hinzu, der bearbeiten und chatten kann.",
+                "owner": "$~Mitarbeiter können dieses Projekt bearbeiten und darüber chatten.",
+                "collaborator": "$~Sie sind ein Mitarbeiter. Sie können dieses Projekt bearbeiten und darüber chatten.",
+                "curator": "$~Sie sind Kurator der Galerie dieses Projekts. Sie können dieses Projekt bearbeiten und darüber chatten."
+            }
         }
     },
     "moderation": {

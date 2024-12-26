@@ -4,11 +4,12 @@
     import { status } from '../../db/Database';
     import { getUser } from '../project/Contexts';
     import Button from '@components/widgets/Button.svelte';
+    import { CANCEL_SYMBOL } from '@parser/Symbols';
 
     const user = getUser();
-    $: device = $user === null;
+    let device = $derived($user === null);
 
-    let showError = false;
+    let showError = $state(false);
 </script>
 
 <Button
@@ -25,7 +26,7 @@
               } ✔`
             : $status.status === SaveStatus.Saving
               ? `${$locales.get((l) => l.ui.save.saving)} …`
-              : `${$locales.get((l) => l.ui.save.unsaved)} ⨉`}
+              : `${$locales.get((l) => l.ui.save.unsaved)} ${CANCEL_SYMBOL}`}
     </div>
 </Button>
 

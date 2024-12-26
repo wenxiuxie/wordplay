@@ -16,10 +16,14 @@
     import type LanguageCode from '@locale/LanguageCode';
     import LocaleName from './LocaleName.svelte';
     import { Settings } from '../../db/Database';
+    import { CANCEL_SYMBOL } from '@parser/Symbols';
 
-    $: selectedLocales = $locales
-        .getPreferredLocales()
-        .map((locale) => localeToString(locale)) as SupportedLocale[];
+    let selectedLocales = $state<string[]>([]);
+    $effect(() => {
+        selectedLocales = $locales
+            .getPreferredLocales()
+            .map((locale) => localeToString(locale)) as SupportedLocale[];
+    });
 
     function select(
         locale: SupportedLocale,
@@ -69,8 +73,9 @@
                 tip={$locales.get((l) => l.ui.dialog.locale.button.remove)}
                 active={selectedLocales.length > 1}
                 >{#if selectedLocales.length > 1}
-                    ⨉
-                {/if}<LocaleName locale={selected} supported /></Button
+                    {CANCEL_SYMBOL}
+                {/if}
+                <LocaleName locale={selected} supported /></Button
             >
         {/each}
     </div>

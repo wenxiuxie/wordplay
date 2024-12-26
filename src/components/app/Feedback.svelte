@@ -2,12 +2,17 @@
     import { animationDuration } from '@db/Database';
     import { slide } from 'svelte/transition';
 
-    export let inline = false;
+    interface Props {
+        inline?: boolean;
+        children?: import('svelte').Snippet;
+    }
+
+    let { inline = false, children }: Props = $props();
 </script>
 
-{#if inline}<span class="feedback"><slot /></span>{:else}
+{#if inline}<span class="feedback">{@render children?.()}</span>{:else}
     <p class="feedback" transition:slide={{ duration: $animationDuration }}
-        ><slot /></p
+        >{@render children?.()}</p
     >{/if}
 
 <style>
@@ -17,7 +22,7 @@
         color: var(--wordplay-background);
         background: var(--wordplay-error);
         margin-block-start: var(--wordplay-spacing);
-        padding: var(--wordplay-spacing);
+        padding: calc(var(--wordplay-spacing) / 2);
         border-radius: var(--wordplay-border-radius);
         flex-grow: 0;
     }

@@ -3068,7 +3068,8 @@
                 "output": "$?",
                 "palette": "$?",
                 "docs": "$?",
-                "source": "$?"
+                "source": "$?",
+                "collaborate": "$?"
             },
             "button": {
                 "collapse": "$?"
@@ -3077,7 +3078,9 @@
         "project": {
             "error": {
                 "unknown": "$?",
-                "translate": "$?"
+                "translate": "$?",
+                "tile": "$?",
+                "reset": "$?"
             },
             "button": {
                 "showCollaborators": "$?",
@@ -3335,10 +3338,6 @@
                 "header": "$?",
                 "explanation": "$?",
                 "subheader": {
-                    "collaborators": {
-                        "header": "$?",
-                        "explanation": "$?"
-                    },
                     "gallery": {
                         "header": "$?",
                         "explanation": "$?"
@@ -3417,7 +3416,8 @@
                 },
                 "options": {
                     "mic": "$?",
-                    "camera": "$?"
+                    "camera": "$?",
+                    "face": "$?"
                 }
             },
             "locale": {
@@ -3618,7 +3618,8 @@
                     "confirm": "$?",
                     "delete": "$?",
                     "reallyDelete": "$?",
-                    "name": "$?"
+                    "name": "$?",
+                    "join": "$?"
                 },
                 "error": {
                     "expired": "$?",
@@ -3687,7 +3688,8 @@
                 "header": "$?",
                 "prompt": {
                     "username": "$?",
-                    "password": "$?"
+                    "password": "$?",
+                    "create": "$?"
                 }
             },
             "rights": {
@@ -3719,6 +3721,43 @@
         "template": {
             "unwritten": "$?",
             "unparsable": "$?"
+        },
+        "collaborate": {
+            "label": "$?",
+            "role": {
+                "owner": "$?",
+                "collaborators": "$?",
+                "curators": "$?"
+            },
+            "field": {
+                "message": {
+                    "description": "$?",
+                    "placeholder": "$?"
+                }
+            },
+            "button": {
+                "submit": {
+                    "label": "$?",
+                    "tip": "$?"
+                },
+                "start": {
+                    "label": "$?",
+                    "tip": "$?"
+                },
+                "delete": "$?"
+            },
+            "error": {
+                "unowned": "$?",
+                "offline": "$?",
+                "empty": "$?",
+                "deleted": "$?"
+            },
+            "prompt": {
+                "owner": "$?",
+                "collaborator": "$?",
+                "curator": "$?",
+                "solo": "$?"
+            }
         }
     },
     "moderation": {

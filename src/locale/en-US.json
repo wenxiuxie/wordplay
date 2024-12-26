@@ -612,7 +612,7 @@
                     "secondary": "oh, am I not supposed to be here?"
                 },
                 "MissingInput": {
-                    "primary": "I can't evaluate without the input named $2 :(",
+                    "primary": "I can't evaluate without the input $2 :(",
                     "secondary": "I need a value, can you give me one?"
                 },
                 "NotInstantiable": "I can't make this @StructureDefinition, it has unimplemented functions.",
@@ -4065,7 +4065,8 @@
                 "output": "stage",
                 "palette": "palette",
                 "docs": "guide",
-                "source": "source"
+                "source": "source",
+                "collaborate": "collaborate"
             },
             "button": {
                 "collapse": "collapse window"
@@ -4073,11 +4074,13 @@
         },
         "project": {
             "error": {
-                "unknown": "This project doesn't exist or isn't public.",
-                "translate": "There was a problem translating your project."
+                "unknown": "This project doesn't exist or you don't have access to it.",
+                "translate": "There was a problem translating your project.",
+                "tile": "Oops, there was an error",
+                "reset": "Attempt to reset..."
             },
             "button": {
-                "showCollaborators": "show collaborators dialog",
+                "showCollaborators": "show share dialog",
                 "removeCollaborator": "remove collaborator",
                 "copy": "copy project to clipboard as text",
                 "addSource": "create a new $source",
@@ -4175,7 +4178,7 @@
                 "• Browse the <galleries@://galleries> for inspiration.",
                 "If you're stuck, <learn more@://learn>."
             ],
-            "overwritten": "Received a more recent version!",
+            "overwritten": "Project revised elsewhere",
             "confirm": {
                 "delete": {
                     "description": "delete this $source",
@@ -4341,12 +4344,8 @@
         "dialog": {
             "share": {
                 "header": "Sharing",
-                "explanation": "Control who can edit and see this project.",
+                "explanation": "Share this project with galleries or the world.",
                 "subheader": {
-                    "collaborators": {
-                        "header": "Collaborators",
-                        "explanation": "Collaborators can view and edit this project. Only project owners can modify collaborators."
-                    },
                     "gallery": {
                         "header": "Gallery",
                         "explanation": "Add this project in a gallery alongside other creators, or create a gallery on your <projects@://projects> page. If you add a project to a public gallery, your project will become public."
@@ -4387,7 +4386,7 @@
                     "gallery": "gallery chooser"
                 }
             },
-        "settings": {
+            "settings": {
                 "header": "Settings",
                 "explanation": "Change layout, device, and theme settings.",
                 "button": {
@@ -4448,6 +4447,7 @@
                     }
                 },
                 "options": {
+                    "face": "font face",
                     "mic": "selected microphone",
                     "camera": "selected camera"
                 }
@@ -4477,6 +4477,43 @@
                     "insertCode": "Insert",
                     "debug": "Debug"
                 }
+            }
+        },
+        "collaborate": {
+            "label": "collaborate",
+            "role": {
+                "owner": "owner",
+                "collaborators": "collaborators",
+                "curators": "curators"
+            },
+            "field": {
+                "message": {
+                    "description": "The chat message to submit",
+                    "placeholder": "Type a message"
+                }
+            },
+            "button": {
+                "submit": {
+                    "label": "Send",
+                    "tip": "Send a message to your collaborators"
+                },
+                "start": {
+                    "label": "Start a chat",
+                    "tip": "Begin a discussion with yourself or others."
+                },
+                "delete": "delete this message"
+            },
+            "error": {
+                "unowned": "This project isn't stored online, so it can't have a chat or collaborators.",
+                "offline": "Unable to load this chat.",
+                "empty": "No messages.",
+                "deleted": "This message was deleted."
+            },
+            "prompt": {
+                "solo": "Chat with yourself or add a collaborator, who can edit and chat.",
+                "owner": "Collaborators can edit this project and chat about it.",
+                "collaborator": "You're a collaborator. You can edit this project and chat about it.",
+                "curator": "You're a curator of this project's gallery. You can edit this project and chat about it."
             }
         },
         "palette": {
@@ -4652,10 +4689,11 @@
             },
             "login": {
                 "header": "Login",
-                "subtitle": "Create an account or login in to save your work online",
+                "subtitle": "Save, collaborate, and share",
                 "anonymous": "login",
                 "prompt": {
-                    "login": "Your performances are saving in this browser, but not online. If this is your device, that's okay! If it's not, others will have access to your projects, and you may lose them. To save them online and keep them private, log in or <create an account@://join>:",
+                    "login": "Login to save your projects, collaborate, and share:",
+                    "join": "Or, <create an account@://join> to start.",
                     "forgot": "*Forgot your password?* Unfortunately, we cannot recover your account since we do not gather contact information.",
                     "enter": "It looks like your login link came from a different browser or device. Can you enter your email again, just so we're sure it's you?",
                     "play": "You're logged in, we can save your projects online now! Want to create something?",
@@ -4739,8 +4777,9 @@
             "join": {
                 "header": "Join",
                 "prompt": {
-                    "username": "Ready to create an account? First, choose a *username*. It must be at least 5 characters, can't be an email address, and shouldn't contain your name or other identifing information.",
-                    "password": "Choose a password with at least *10 characters*. Enter it again to ensure you typed it correctly, and store it somewhere secure, like a password manager. *There is no way to recover your account* if you lose it, since we do not gather contact information."
+                    "create": "Create an account to save your projects, collaborate with others, and share your work.",
+                    "username": "Usernames must be at least /5 characters/, can't be an email, and shouldn't contain your name or other identifing information.",
+                    "password": "Passwords must be at least /10 characters/. Type it twice and write it down somewhere secure, like a password manager. *There is no way to recover your account* if you lose it, since we do not gather contact information."
                 }
             },
             "rights": {

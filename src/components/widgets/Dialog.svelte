@@ -8,16 +8,26 @@
     import Emoji from '@components/app/Emoji.svelte';
     import setKeyboardFocus from '@components/util/setKeyboardFocus';
 
-    export let show = false;
-    export let description: DialogText;
-    export let closeable = true;
-    export let button:
-        | { tip: string; icon?: string; label: string }
-        | undefined = undefined;
+    interface Props {
+        show?: boolean;
+        description: DialogText;
+        closeable?: boolean;
+        button?: { tip: string; icon?: string; label: string } | undefined;
+        children?: import('svelte').Snippet;
+    }
 
-    let view: HTMLDialogElement | undefined = undefined;
+    let {
+        show = $bindable(false),
+        description,
+        closeable = true,
+        button = undefined,
+        children,
+    }: Props = $props();
 
-    $: {
+    let view: HTMLDialogElement | undefined = $state(undefined);
+
+    /** Show and focus dialog when shown, hide when not. */
+    $effect(() => {
         if (view) {
             if (show) {
                 view.showModal();
@@ -30,20 +40,22 @@
                 view.close();
             }
         }
-    }
+    });
 </script>
 
 {#if button}
     <Button tip={button.tip} action={() => (show = true)}
         >{#if button.icon}<Emoji>{button.icon}</Emoji>
-        {/if}{button.label}</Button
+        {/if}
+        {#if button.label.length > 0}
+            {button.label}{/if}</Button
     >
 {/if}
-<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
+<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 <dialog
     bind:this={view}
     tabindex="-1"
-    on:keydown={closeable
+    onkeydown={closeable
         ? (event) => (event.key === 'Escape' ? (show = false) : undefined)
         : undefined}
 >
@@ -59,7 +71,7 @@
     <div class="content">
         <Header>{description.header}</Header>
         <MarkupHtmlView markup={description.explanation} />
-        <slot />
+        {@render children?.()}
     </div>
 </dialog>
 
@@ -93,5 +105,8 @@
         min-height: 100%;
         padding: 1em;
         padding-top: 0;
+        display: flex;
+        flex-direction: column;
+        gap: var(--wordplay-spacing);
     }
 </style>

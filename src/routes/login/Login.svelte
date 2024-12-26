@@ -26,16 +26,16 @@
     import MarkupHtmlView from '@components/concepts/MarkupHTMLView.svelte';
 
     /** The username typed into the text field */
-    let username = '';
-    let password = '';
-    let email = '';
+    let username = $state('');
+    let password = $state('');
+    let email = $state('');
 
     /** When true, login submission button shows loading spinner */
-    let loading = false;
+    let loading = $state(false);
 
     /** Feedback to show in the login form */
-    let usernameFeedback: string | undefined = undefined;
-    let emailFeedback: string | undefined = undefined;
+    let usernameFeedback: string | undefined = $state(undefined);
+    let emailFeedback: string | undefined = $state(undefined);
 
     /** When the page is mounted, see if the link is an email sign in link, and if so, attempt to finish logging in. */
     onMount(() => {
@@ -157,10 +157,9 @@
 <!-- Provide some reasons to log in -->
 <Header>{$locales.get((l) => l.ui.page.login.header)}</Header>
 
+<MarkupHtmlView markup={$locales.get((l) => l.ui.page.login.prompt.login)} />
+
 <LoginForm submit={usernameSignin} feedback={usernameFeedback}>
-    <MarkupHtmlView
-        markup={$locales.get((l) => l.ui.page.login.prompt.login)}
-    />
     <div class="form">
         <TextField
             description={$locales.get(
@@ -200,7 +199,16 @@
     </div>
 </LoginForm>
 
-<MarkupHtmlView markup={$locales.get((l) => l.ui.page.login.prompt.forgot)} />
+<MarkupHtmlView markup={$locales.get((l) => l.ui.page.login.prompt.join)} />
+
+<hr />
+
+<MarkupHtmlView
+    note
+    markup={$locales.get((l) => l.ui.page.login.prompt.forgot)}
+/>
+
+<hr />
 
 <LoginForm submit={emailSignin} feedback={emailFeedback}>
     <Note
@@ -244,7 +252,6 @@
         row-gap: var(--wordplay-spacing);
         align-items: baseline;
         justify-content: center;
-        margin-top: 1em;
         margin-bottom: 1em;
     }
 </style>
