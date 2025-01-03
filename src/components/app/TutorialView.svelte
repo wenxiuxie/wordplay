@@ -1,6 +1,6 @@
 <script lang="ts">
     import ProjectView from '@components/project/ProjectView.svelte';
-    import Project from '@models/Project';
+    import Project from '@db/projects/Project';
     import Speech from '@components/lore/Speech.svelte';
     import Progress from '../../tutorial/Progress';
     import Note from '../../components/widgets/Note.svelte';
@@ -32,9 +32,9 @@
     import type { Dialog, Performance } from '../../tutorial/Tutorial';
     import type Markup from '../../nodes/Markup';
     import Header from './Header.svelte';
-    import { PersistenceType } from '../../db/ProjectHistory.svelte';
+    import { PersistenceType } from '../../db/projects/ProjectHistory.svelte';
     import Options from '@components/widgets/Options.svelte';
-    import { moderatedFlags } from '../../models/Moderation';
+    import { moderatedFlags } from '../../db/projects/Moderation';
     import setKeyboardFocus from '@components/util/setKeyboardFocus';
     import type Node from '@nodes/Node';
 

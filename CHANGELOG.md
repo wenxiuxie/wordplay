@@ -3,6 +3,40 @@
 We'll note all notable changes in this file, including bug fixes, enhancements, and all closed issues.
 Dates are in `YYYY-MM-DD` format and versions are in [semantic versioning](http://semver.org/) format.
 
+## 0.14.0 2024-12-27
+
+### Added
+
+- Fixed #519, adding the ability for teachers to create classes, student accounts, and galleries associated with classes.
+- Added ability to refer to initial bound reaction values by name.
+- Prioritize emojis in glyph chooser.
+
+### Fixed
+
+- Permit reference to initial value in reactions.
+- Phrases shouldn't intercept pointer events unless selectable, so selectable things are selectable.
+- Don't scroll to caret on evaluation update.
+- Prevent undo/redo from going to browser.
+- Correctly restore position after undo/read.
+- Fixed async issues with conflict updates in project view.
+- Autocomplete elision symbol outside of rich text.
+- Don't show moderation warning on editable projects.
+- Handle caret pointer placements below the last line correctly.
+- Don't filter output interfaces from the concept index.
+- Fixed bad wrap within docs ending in newline.
+- Tick for collisions.
+- Keep focus on keyboard-moved phrase.
+- Render Markup values as symbols for debugger to highlight.
+- Fixed Phrase dragging in output view.
+- Performance improvements to editor.
+- Fixed teach and learn emojis on landing page.
+
+### Maintenance
+
+- Updated minor versions of Svelte, Sveltekit, Vite.
+- Upgraded to Firebase 11, Firebase Functions 6, Firebase Admin 13
+- Consolidated organization of database-related files.
+
 ## 0.13.3 2024-12-14
 
 ### Added

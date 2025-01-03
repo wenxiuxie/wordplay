@@ -12,7 +12,7 @@
     } from 'svelte/store';
     import { page } from '$app/stores';
     import ProjectView from '@components/project/ProjectView.svelte';
-    import type Project from '@models/Project';
+    import type Project from '@db/projects/Project';
     import Feedback from '@components/app/Feedback.svelte';
     import Loading from '@components/app/Loading.svelte';
     import { browser } from '$app/environment';
@@ -113,9 +113,9 @@
 
 {#if project}
     <Page>
-        <!-- When the project ID changes, create a new project. -->
+        <!-- When the project ID changes, create a fresh project view. -->
         {#key project.getID()}
-            <ProjectView {project} {editable} {overwritten} warn={true} />
+            <ProjectView {project} {editable} {overwritten} warn={!editable} />
         {/key}
     </Page>
 {:else if loading}

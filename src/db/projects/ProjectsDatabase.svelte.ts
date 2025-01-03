@@ -1,9 +1,8 @@
-import Dexie, { liveQuery, type Observable, type Table } from 'dexie';
+import { type Observable } from 'dexie';
 import { PersistenceType, ProjectHistory } from './ProjectHistory.svelte';
-import { get, writable, type Writable } from 'svelte/store';
-import Project from '../models/Project';
-import type LocaleText from '../locale/LocaleText';
-import { Galleries, Locales, SaveStatus, type Database } from './Database';
+import Project from './Project';
+import type LocaleText from '../../locale/LocaleText';
+import { Galleries, Locales, SaveStatus, type Database } from '../Database';
 import {
     collection,
     deleteDoc,
@@ -18,23 +17,23 @@ import {
     type Unsubscribe,
 } from 'firebase/firestore';
 import { FirebaseError } from 'firebase/app';
-import { firestore } from './firebase';
-import type Node from '../nodes/Node';
-import Source from '../nodes/Source';
-import { ExamplePrefix, getExample } from '../examples/examples';
-import { unknownFlags } from '../models/Moderation';
+import { firestore } from '../firebase';
+import type Node from '../../nodes/Node';
+import Source from '../../nodes/Source';
+import { ExamplePrefix, getExample } from '../../examples/examples';
+import { unknownFlags } from './Moderation';
 import {
-    ProjectSchemaLatestVersion,
     upgradeProject,
     type SerializedProject,
     type SerializedProjectUnknownVersion,
     ProjectSchema,
-} from '../models/ProjectSchemas';
+} from './ProjectSchemas';
 import { PossiblePII } from '@conflicts/PossiblePII';
 import { EditFailure } from './EditFailure';
 import { COPY_SYMBOL } from '@parser/Symbols';
-import type Gallery from '@models/Gallery';
+import type Gallery from '@db/galleries/Gallery';
 import { SvelteMap } from 'svelte/reactivity';
+import { ProjectsDexie } from './ProjectsDexie';
 
 /** The name of the projects collection in Firebase */
 export const ProjectsCollection = 'projects';
@@ -43,41 +42,6 @@ export const ProjectsCollection = 'projects';
  * Projects shouldn't be larger than 1,048,576 bytes, the Firestore document limit.
  */
 export const MAX_PROJECT_BYTE_SIZE = 1048576;
-
-/** The schema of the IndexedDB cache of projects. */
-export class ProjectsDexie extends Dexie {
-    projects!: Table<SerializedProject>;
-
-    constructor() {
-        super('wordplay');
-        this.version(ProjectSchemaLatestVersion).stores({
-            projects: '++id, name, locales, owner, collabators',
-        });
-    }
-
-    async getProject(
-        id: string,
-    ): Promise<SerializedProjectUnknownVersion | undefined> {
-        const project = await this.projects.where('id').equals(id).toArray();
-        return project[0];
-    }
-
-    async deleteAllProjects(): Promise<void> {
-        return await this.projects.clear();
-    }
-
-    async deleteProject(id: string): Promise<void> {
-        return await this.projects.delete(id);
-    }
-
-    saveProjects(projects: SerializedProject[]) {
-        this.projects.bulkPut(projects);
-    }
-
-    async getAllProjects(): Promise<Observable<SerializedProject[]>> {
-        return liveQuery(() => this.projects.toArray());
-    }
-}
 
 export default class ProjectsDatabase {
     /** The database that manages this */
@@ -98,11 +62,22 @@ export default class ProjectsDatabase {
     private projectHistories: SvelteMap<string, ProjectHistory> =
         new SvelteMap();
 
+    /** The latest versions of all projects */
+    readonly currentProjects: Project[] = $derived(
+        Array.from(this.projectHistories.values()).map((history) =>
+            history.getCurrent(),
+        ),
+    );
+
     /** A store of all user editable projects stored in projectsDB. Derived from editable projects above. */
-    readonly allEditableProjects: Writable<Project[]> = writable([]);
+    readonly allEditableProjects: Project[] = $derived(
+        this.currentProjects.filter((project) => !project.isArchived()),
+    );
 
     /** A store of all archived projects stored in projectsDB. Derived from editable projects above. */
-    readonly allArchivedProjects: Writable<Project[]> = writable([]);
+    readonly allArchivedProjects: Project[] = $derived(
+        this.currentProjects.filter((project) => project.isArchived()),
+    );
 
     /** A cache of read only projects, by project ID. */
     readonly readonlyProjects: SvelteMap<string, Project | undefined> =
@@ -264,9 +239,6 @@ export default class ProjectsDatabase {
                 // Delete the deleted if the data was from the server.
                 if (!snapshot.metadata.fromCache)
                     for (const id of deleted) await this.deleteLocalProject(id);
-
-                // Refresh stores after everything is added and deleted.
-                this.refreshEditableProjects();
             },
             (error) => {
                 if (error instanceof FirebaseError) {
@@ -288,7 +260,7 @@ export default class ProjectsDatabase {
      * Duplicate a project and give it to the current user, returning it's ID.
      */
     duplicate(project: Project): Project {
-        const nameExists = get(this.allEditableProjects).some(
+        const nameExists = this.allEditableProjects.some(
             (p) => p.getName() === project.getName(),
         );
         const copy = project
@@ -328,9 +300,6 @@ export default class ProjectsDatabase {
                 history = new ProjectHistory(project, persist, saved, Locales);
                 this.projectHistories.set(project.getID(), history);
 
-                // Update the editable projects
-                this.refreshEditableProjects();
-
                 // Request a save.
                 this.saveSoon();
             }
@@ -346,28 +315,11 @@ export default class ProjectsDatabase {
                 }
             }
 
-            // Refresh the history
-            this.refreshEditableProjects();
-
             // Return the history
             return history;
         } else {
             this.readonlyProjects.set(project.getID(), project);
         }
-    }
-
-    /** Get all the current projects in a list so that anything that depends on the projects has a fresh list. */
-    refreshEditableProjects() {
-        this.allEditableProjects.set(
-            Array.from(this.projectHistories.values())
-                .map((history) => history.getCurrent())
-                .filter((project) => !project.isArchived()),
-        );
-        this.allArchivedProjects.set(
-            Array.from(this.projectHistories.values())
-                .map((history) => history.getCurrent())
-                .filter((project) => project.isArchived()),
-        );
     }
 
     /** Create a project and return it's ID */
@@ -530,9 +482,6 @@ export default class ProjectsDatabase {
 
             // If the save was successful, update the projects and persist if asked.
             if (success === true) {
-                // Update the editable projects.
-                this.refreshEditableProjects();
-
                 // Save according to the requested policy.
                 if (persist)
                     if (when === 'immediate') await this.persist();
@@ -603,9 +552,6 @@ export default class ProjectsDatabase {
 
         // Delete from the local cache.
         this.deleteLocalProject(id);
-
-        // Refresh the project stores.
-        this.refreshEditableProjects();
     }
 
     /** Delete project locally */
@@ -615,9 +561,6 @@ export default class ProjectsDatabase {
 
         // Untrack the project.
         this.projectHistories.delete(id);
-
-        // Refresh the lists of editable projects.
-        this.refreshEditableProjects();
     }
 
     /** Persist in storage */
@@ -789,7 +732,6 @@ export default class ProjectsDatabase {
     async deleteLocal() {
         this.localDB.deleteAllProjects();
         this.projectHistories.clear();
-        this.refreshEditableProjects();
     }
 
     /** Attempt to parse a seralized project into a project. */

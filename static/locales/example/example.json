@@ -3051,7 +3051,15 @@
             "loading": {
                 "message": "$?"
             },
-            "home": "$?"
+            "home": "$?",
+            "table": {
+                "cell": {
+                    "description": "$?",
+                    "placeholder": "$?"
+                },
+                "addcolumn": "$?",
+                "removecolumn": "$?"
+            }
         },
         "tile": {
             "toggle": {
@@ -3083,7 +3091,6 @@
                 "reset": "$?"
             },
             "button": {
-                "showCollaborators": "$?",
                 "removeCollaborator": "$?",
                 "copy": "$?",
                 "addSource": "$?",
@@ -3096,7 +3103,15 @@
                 "focusCycle": "$?",
                 "unsaved": "$?",
                 "translate": "$?",
-                "primary": "$?"
+                "primary": "$?",
+                "share": {
+                    "tip": "$?",
+                    "label": "$?"
+                },
+                "history": {
+                    "on": "$?",
+                    "redo": "$?"
+                }
             },
             "field": {
                 "name": {
@@ -3139,6 +3154,10 @@
                     "explanation": "$?"
                 },
                 "delete": {
+                    "header": "$?",
+                    "explanation": "$?"
+                },
+                "classes": {
                     "header": "$?",
                     "explanation": "$?"
                 }
@@ -3534,7 +3553,8 @@
                     "contribute": {
                         "label": "$?",
                         "subtitle": "$?"
-                    }
+                    },
+                    "teach": "$?"
                 }
             },
             "learn": {
@@ -3701,6 +3721,120 @@
                 "header": "$?",
                 "prompt": "$?",
                 "content": ["$?"]
+            },
+            "teach": {
+                "header": "$?",
+                "prompt": {
+                    "none": "$?",
+                    "some": "$?"
+                },
+                "error": {
+                    "offline": "$?",
+                    "login": "$?",
+                    "teacher": "$?"
+                },
+                "link": {
+                    "request": "$?",
+                    "new": "$?"
+                }
+            },
+            "newclass": {
+                "header": "$?",
+                "subheader": {
+                    "class": "$?",
+                    "students": "$?",
+                    "credentials": "$?",
+                    "submit": "$?"
+                },
+                "prompt": {
+                    "start": "$?",
+                    "review": "$?",
+                    "ready": "$?",
+                    "pending": "$?",
+                    "submit": "$?",
+                    "submitting": "$?",
+                    "download": "$?"
+                },
+                "field": {
+                    "name": {
+                        "description": "$?",
+                        "placeholder": "$?"
+                    },
+                    "description": {
+                        "description": "$?",
+                        "placeholder": "$?"
+                    },
+                    "existing": {
+                        "label": "$?",
+                        "prompt": "$?"
+                    },
+                    "metadata": {
+                        "description": "$?",
+                        "placeholder": "$?",
+                        "prompt": "$?"
+                    },
+                    "words": {
+                        "description": "$?",
+                        "placeholder": "$?",
+                        "prompt": "$?"
+                    },
+                    "generate": {
+                        "label": "$?",
+                        "tip": "$?"
+                    },
+                    "edit": {
+                        "label": "$?",
+                        "tip": "$?"
+                    },
+                    "submit": {
+                        "label": "$?",
+                        "tip": "$?"
+                    }
+                },
+                "error": {
+                    "duplicates": "$?",
+                    "columns": "$?",
+                    "generate": "$?",
+                    "taken": "$?",
+                    "limit": "$?",
+                    "words": "$?",
+                    "account": "$?",
+                    "generic": "$?"
+                }
+            },
+            "class": {
+                "header": "$?",
+                "subheader": {
+                    "teachers": "$?",
+                    "students": "$?",
+                    "galleries": "$?"
+                },
+                "prompt": {
+                    "gallery": "$?",
+                    "delete": "$?"
+                },
+                "field": {
+                    "name": {
+                        "description": "$?",
+                        "placeholder": "$?"
+                    },
+                    "description": {
+                        "description": "$?",
+                        "placeholder": "$?"
+                    },
+                    "newteacher": {
+                        "placeholder": "$?",
+                        "description": "$?"
+                    },
+                    "addteacher": "$?",
+                    "delete": {
+                        "tip": "$?",
+                        "label": "$?"
+                    }
+                },
+                "error": {
+                    "notfound": "$?"
+                }
             }
         },
         "edit": {
@@ -3757,6 +3891,23 @@
                 "collaborator": "$?",
                 "curator": "$?",
                 "solo": "$?"
+            }
+        },
+        "checkpoints": {
+            "label": {
+                "now": "$?",
+                "history": "$?",
+                "restore": "$?",
+                "ago": "$?"
+            },
+            "button": {
+                "clear": "$?",
+                "select": "$?",
+                "checkpoint": "$?",
+                "back": "$?",
+                "forward": "$?",
+                "restore": "$?",
+                "now": "$?"
             }
         }
     },

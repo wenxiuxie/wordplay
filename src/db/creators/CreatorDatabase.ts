@@ -1,6 +1,6 @@
 import { httpsCallable } from 'firebase/functions';
-import type { Database } from './Database';
-import { functions } from './firebase';
+import type { Database } from '../Database';
+import { functions } from '../firebase';
 import type { UserIdentifier } from 'firebase-admin/auth';
 import type { User } from 'firebase/auth';
 import isValidEmail from './isValidEmail';
@@ -37,6 +37,12 @@ export class Creator {
 
     static isUsername(email: string) {
         return email.endsWith(Creator.CreatorUsernameEmailDomain);
+    }
+
+    static getUsername(email: string) {
+        return Creator.isUsername(email)
+            ? email.replace(Creator.CreatorUsernameEmailDomain, '')
+            : email;
     }
 
     getName() {

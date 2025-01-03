@@ -1,5 +1,5 @@
 import type Locales from '../../locale/Locales';
-import type Project from '../../models/Project';
+import type Project from '../../db/projects/Project';
 import type Bounds from './Bounds';
 import Layout from './Layout';
 import TileKinds from './TileKinds';
@@ -74,12 +74,11 @@ export default class Tile {
 
     isVisibleCollapsed(editable: boolean) {
         return (
-            this.isCollapsed() &&
-            (editable ||
-                !(
-                    this.kind === TileKind.Palette ||
-                    this.kind === TileKind.Collaborate
-                ))
+            editable ||
+            !(
+                this.kind === TileKind.Palette ||
+                this.kind === TileKind.Collaborate
+            )
         );
     }
 

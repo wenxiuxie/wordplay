@@ -21,11 +21,11 @@
     import { isName } from '../../parser/Tokenizer';
     import { animationDuration, locales } from '../../db/Database';
     import { onMount } from 'svelte';
-    import Arrangement from '../../db/Arrangement';
+    import Arrangement from '../../db/settings/Arrangement';
     import Glyphs from '../../lore/Glyphs';
     import Color from '../../output/Color';
     import Toggle from '../widgets/Toggle.svelte';
-    import type Project from '../../models/Project';
+    import type Project from '../../db/projects/Project';
     import Emoji from '@components/app/Emoji.svelte';
     import TileKinds from './TileKinds';
     import FullscreenIcon from './FullscreenIcon.svelte';

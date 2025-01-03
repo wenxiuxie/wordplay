@@ -1,5 +1,93 @@
 <script module lang="ts">
-    export const TYPING_DELAY = 500;
+    import { type Template } from '@locale/LocaleText';
+    import {
+        type FieldText,
+        type DialogText,
+        type ButtonText,
+    } from '@locale/UITexts';
+
+    /** How long to wait until considering typing idle. */
+    export const KeyboardIdleWaitTime = 500;
+
+    export type ProjectText = {
+        /** The error shown when a project ID is unknown. */
+        error: {
+            unknown: string;
+            /** The error to show if translation wasn't possible */
+            translate: string;
+            /** The message for an error in a tile */
+            tile: string;
+            /** The button label for an error reset */
+            reset: string;
+        };
+        button: {
+            /** Shows the sharing dialog */
+            share: ButtonText;
+            /** Remove a collaborator that has been shared with */
+            removeCollaborator: string;
+            /** Copy the project as text to the clipboard */
+            copy: string;
+            /** Add a source file */
+            addSource: string;
+            /** Duplicate the project */
+            duplicate: string;
+            /** Revert project to original code */
+            revert: string;
+            /** Keyboard shortcut to focus output tile */
+            focusOutput: string;
+            /** Keyboard shortcut to focus source tiles */
+            focusSource: string;
+            /** Keyboard shortcut to focus documentation tile */
+            focusDocs: string;
+            /** Keyboard shortcut to focus palette tiles */
+            focusPalette: string;
+            /** Keyboard shortcut to cycle between tiles */
+            focusCycle: string;
+            /** Show save error button */
+            unsaved: string;
+            /** Show translation button */
+            translate: ButtonText;
+            /** The tooltip for the primary locale setting button */
+            primary: string;
+            /** The history switch */
+            history: { off: string; on: string };
+        };
+        field: {
+            /** The project name text field */
+            name: FieldText;
+        };
+        /** The keyboard shortcut to show the shortcut menu */
+        help: string;
+        /** The text to show when all of the tiles are collapsed. */
+        collapsed: string;
+        /** The messages shown for save status */
+        save: {
+            /** When projects fail to save locally */
+            projectsNotSavedLocally: Template;
+            /** When projects can't save locally */
+            projectsCannotNotSaveLocally: Template;
+            /** When a project wasn't saved because it contained PII */
+            projectContainedPII: Template;
+            /** Projects failed to load */
+            projectsNotLoadingOnline: Template;
+            /** When a project couldn't be saved to the database */
+            projectNotSavedOnline: Template;
+            /** When settings are being saved */
+            settingsUnsaved: Template;
+        };
+        dialog: {
+            /** The header for the save error */
+            unsaved: Template;
+            /** The content for the translation dialog */
+            translate: DialogText;
+        };
+        subheader: {
+            /** The header for the source language */
+            source: Template;
+            /** The header for the destination language */
+            destination: Template;
+        };
+    };
 </script>
 
 <!-- svelte-ignore state_referenced_locally -->
@@ -29,7 +117,7 @@
         getFullscreen,
         getUser,
     } from './Contexts';
-    import type Project from '@models/Project';
+    import type Project from '@db/projects/Project';
     import Documentation from '@components/concepts/Documentation.svelte';
     import Annotations from '../annotations/Annotations.svelte';
     import type Conflict from '@conflicts/Conflict';
@@ -46,7 +134,7 @@
     import Button from '../widgets/Button.svelte';
     import Palette from '../palette/Palette.svelte';
     import type Bounds from './Bounds';
-    import type Source from '@nodes/Source';
+    import Source from '@nodes/Source';
     import SourceTileToggle from './SourceTileToggle.svelte';
     import type MenuInfo from '../editor/util/Menu';
     import Menu from '../editor/Menu.svelte';
@@ -78,7 +166,7 @@
         animationFactor,
         Chats,
     } from '../../db/Database';
-    import Arrangement from '../../db/Arrangement';
+    import Arrangement from '../../db/settings/Arrangement';
     import type Value from '../../values/Value';
     import {
         EnterFullscreen,
@@ -100,7 +188,7 @@
     import Spinning from '../app/Spinning.svelte';
     import CreatorView from '../app/CreatorView.svelte';
     import Moderation from './Moderation.svelte';
-    import { isFlagged } from '../../models/Moderation';
+    import { isFlagged } from '../../db/projects/Moderation';
     import Dialog from '../widgets/Dialog.svelte';
     import Separator from './Separator.svelte';
     import Emoji from '../app/Emoji.svelte';
@@ -115,7 +203,7 @@
     import Glyphs from '../../lore/Glyphs';
     import Speech from '@components/lore/Speech.svelte';
     import Translate from './Translate.svelte';
-    import { AnimationFactorIcons } from '@db/AnimationFactorSetting';
+    import { AnimationFactorIcons } from '@db/settings/AnimationFactorSetting';
     import { CANCEL_SYMBOL, COPY_SYMBOL } from '@parser/Symbols';
     import CopyButton from './CopyButton.svelte';
     import { localeToString } from '@locale/Locale';
@@ -125,6 +213,9 @@
     import setKeyboardFocus from '@components/util/setKeyboardFocus';
     import CollaborateView from '@components/app/chat/CollaborateView.svelte';
     import type Chat from '@db/ChatDatabase.svelte';
+    import Checkpoints from './Checkpoints.svelte';
+    import { parseNames } from '@parser/parseBind';
+    import Link from '@components/app/Link.svelte';
 
     interface Props {
         project: Project;
@@ -199,14 +290,29 @@
     /** The background color of the output, so we can make the tile match. */
     let outputBackground = $state<Color | string | null>(null);
 
+    /** The current checkpoint chosen in the checkpoint chooser */
+    let checkpoint = $state(-1);
+
+    /** Whether the project is editable and viewing an older checkpoint */
+    let editableAndCurrent = $derived(editable && checkpoint === -1);
+
     /** The new source recently added. Used to remember to keep it expanded initially. */
     let newSource = $state<Source | undefined>(undefined);
 
     /** Keep a source select, to decide what value is shown on stage */
     let selectedSourceIndex = $state(0);
 
+    /** The current sources being viewed, either the project's source, or a checkpointed one */
+    const sources = $derived(
+        checkpoint >= 0
+            ? project
+                  .getCheckpoints()
+                  [checkpoint].sources.map((s) => new Source(s.names, s.code))
+            : project.getSources(),
+    );
+
     /** The selected source is based on the index.*/
-    const selectedSource = $derived(project.getSources()[selectedSourceIndex]);
+    const selectedSource = $derived(sources[selectedSourceIndex]);
 
     // Whether the project is in 'play' mode, dictated soley by a URL query parameter.
     let requestedPlay = $state(
@@ -272,7 +378,7 @@
                 if (keyboardIdleTimeout) clearTimeout(keyboardIdleTimeout);
                 keyboardIdleTimeout = setTimeout(
                     () => keyboardEditIdle.set(IdleKind.Idle),
-                    TYPING_DELAY,
+                    KeyboardIdleWaitTime,
                 );
             });
         }
@@ -365,17 +471,25 @@
             if (evaluatorTimeout) clearTimeout(evaluatorTimeout);
             evaluatorTimeout = setTimeout(
                 () => updateEvaluator(newProject),
-                TYPING_DELAY,
+                KeyboardIdleWaitTime,
             );
         } else {
             updateEvaluator(newProject);
         }
     });
 
-    // When the locales change, reset the evaluator to use the new locales.
+    // When the locales change or the checkpoint changes, reset the evaluator to use the new locales.
     $effect(() => {
-        if ($locales) untrack(() => resetInputs());
+        checkpoint;
+        $locales;
+        untrack(() => resetInputs());
     });
+
+    function getCheckpointProject(proj: Project) {
+        return proj.withSources(
+            proj.getSources().map((s, index) => [s, sources[index]]),
+        );
+    }
 
     function updateEvaluator(newProject: Project) {
         // Stop the old evaluator.
@@ -383,7 +497,8 @@
 
         // Make the new evaluator, replaying the previous evaluator's inputs, unless we marked the last evaluator is out of date.
         const newEvaluator = new Evaluator(
-            newProject,
+            // Is the checkpoint not now? Use the old sources instead of the current ones.
+            checkpoint >= 0 ? getCheckpointProject(newProject) : newProject,
             DB,
             // Choose the selected evaluation locale or if not selected, currently selected IDE locale
             evaluationLocale ? [evaluationLocale] : localesUsed,
@@ -487,7 +602,7 @@
 
         // Go through each source file and find the tile. If we don't find one, create one.
         let index = 0;
-        for (const source of project.getSources()) {
+        for (const source of sources) {
             const tile = tiles.find(
                 (tile) => tile.id === Layout.getSourceID(index),
             );
@@ -556,7 +671,7 @@
                     undefined,
                     Tile.randomPosition(1024, 768),
                 ),
-                ...project.getSources().map((source, index) =>
+                ...sources.map((source, index) =>
                     // If starting with output only, collapse the source initially too.
                     createSourceTile(source, index).withMode(
                         showOutput
@@ -789,20 +904,31 @@
     );
 
     /**
-     * Re-analyze on a delay any time the project changes.
+     * Any time the evaluator of the project changes, start it, and analyze it after some delay.
      * */
     let updateTimer = $state<NodeJS.Timeout | undefined>(undefined);
     $effect(() => {
-        // Re-evaluate immediately.
+        // Re-evaluate immediately if not started.
         if (!$evaluator.isStarted()) $evaluator.start();
 
         untrack(() => {
             if (updateTimer) clearTimeout(updateTimer);
         });
-        updateTimer = setTimeout(() => {
-            project.analyze();
-            conflicts?.set(project.getConflicts());
-        }, TYPING_DELAY);
+
+        function updateConflicts() {
+            // In the middle of analyzing? Check later.
+            if (project.analyzed === 'analyzing')
+                setTimeout(updateConflicts, KeyboardIdleWaitTime);
+            // Done analyzing, or not analyzed?
+            else {
+                // Analyze if not analyzed  yet.
+                if (project.analyzed === 'unanalyzed') project.analyze();
+                // Get the resulting conflicts.
+                conflicts.set(project.getConflicts());
+            }
+        }
+
+        updateTimer = setTimeout(updateConflicts, KeyboardIdleWaitTime);
     });
 
     /** When stepping and the current step changes, change the active source. */
@@ -893,7 +1019,7 @@
     $effect(() => {
         if (menu) {
             // Find the tile corresponding to the menu's source file.
-            const index = project.getSources().indexOf(menu.getCaret().source);
+            const index = sources.indexOf(menu.getCaret().source);
             const tile = layout?.tiles.find(
                 (tile) => tile.id === Layout.getSourceID(index),
             );
@@ -977,7 +1103,7 @@
     // false: couldn't load it.
     let chat = $state<Chat | undefined | null | false>(null);
     $effect(() => {
-        // When the project changes, get the chat, and mark read if it was unread.
+        // When the project or chat change, get the chat.
         Chats.getChat(project).then((retrievedChat) => {
             chat = retrievedChat;
         });
@@ -1284,7 +1410,7 @@
     }
 
     function getSourceByTileID(id: string) {
-        return project.getSources()[getSourceIndexByID(id)];
+        return sources[getSourceIndexByID(id)];
     }
 
     function handleKey(event: KeyboardEvent) {
@@ -1474,7 +1600,7 @@
                             {project}
                             {tile}
                             {layout}
-                            {editable}
+                            editable={editableAndCurrent}
                             arrangement={$arrangement}
                             background={tile.kind === TileKind.Output
                                 ? outputBackground
@@ -1663,7 +1789,10 @@
                                 {#if tile.kind === TileKind.Documentation}
                                     <Documentation {project} />
                                 {:else if tile.kind === TileKind.Palette}
-                                    <Palette {project} {editable} />
+                                    <Palette
+                                        {project}
+                                        editable={editableAndCurrent}
+                                    />
                                 {:else if tile.kind === TileKind.Output}
                                     <OutputView
                                         {project}
@@ -1674,7 +1803,7 @@
                                         bind:painting
                                         {paintingConfig}
                                         bind:background={outputBackground}
-                                        {editable}
+                                        editable={editableAndCurrent}
                                     />
                                 {:else if tile.kind === TileKind.Collaborate}
                                     <CollaborateView {project} {chat} />
@@ -1686,7 +1815,7 @@
                                             {project}
                                             evaluator={$evaluator}
                                             {source}
-                                            {editable}
+                                            editable={editableAndCurrent}
                                             {overwritten}
                                             sourceID={tile.id}
                                             selected={source === selectedSource}
@@ -1717,7 +1846,49 @@
                             {/snippet}
                             {#snippet footer()}
                                 {#if tile.kind === TileKind.Source && editable}
-                                    <GlyphChooser sourceID={tile.id} />
+                                    {#if editableAndCurrent}<GlyphChooser
+                                            sourceID={tile.id}
+                                        />{/if}
+                                    {#if checkpoint > -1}
+                                        <div class="editor-warning"
+                                            >{$locales.get(
+                                                (l) =>
+                                                    l.ui.checkpoints.label
+                                                        .restore,
+                                            )}
+                                            <Button
+                                                background
+                                                tip={$locales.get(
+                                                    (l) =>
+                                                        l.ui.checkpoints.button
+                                                            .restore,
+                                                )}
+                                                active={checkpoint > -1}
+                                                action={() => {
+                                                    // Save a version of the project with the current source in the history and the new source the old source.
+                                                    Projects.reviseProject(
+                                                        getCheckpointProject(
+                                                            project.withCheckpoint(),
+                                                        ),
+                                                    );
+                                                    checkpoint = -1;
+                                                }}
+                                                >{$locales.get(
+                                                    (l) =>
+                                                        l.ui.checkpoints.button
+                                                            .restore,
+                                                )}</Button
+                                            >
+                                        </div>
+                                    {/if}
+                                    {#if $blocks}
+                                        <div class="editor-warning"
+                                            >This editing mode is experimental. <Link
+                                                to="https://discord.gg/Jh2Qq9husy"
+                                                >Discuss</Link
+                                            > improvements.
+                                        </div>
+                                    {/if}
                                 {:else if tile.kind === TileKind.Output && layout.fullscreenID !== tile.id && !requestedPlay && !showOutput}
                                     <Timeline evaluator={$evaluator} />{/if}
                             {/snippet}
@@ -1741,15 +1912,20 @@
     </div>
 
     {#if !layout.isFullscreen() && !requestedPlay}
+        {@const owner = project.getOwner()}
         <nav class="footer">
-            {#if original}<Button
-                    uiid="revertProject"
-                    tip={$locales.get((l) => l.ui.project.button.revert)}
-                    active={!project.equals(original)}
-                    action={() => revert()}>↺</Button
-                >{/if}
-            {#if !editable}
-                {@const owner = project.getOwner()}
+            <div class="footer-row">
+                {#if original}<Button
+                        uiid="revertProject"
+                        tip={$locales.get((l) => l.ui.project.button.revert)}
+                        active={!project.equals(original)}
+                        action={() => revert()}>↺</Button
+                    >{/if}
+                <Button
+                    tip={$locales.get((l) => l.ui.project.button.copy)}
+                    action={() => toClipboard(project.toWordplay())}
+                    ><Emoji>{COPY_SYMBOL}</Emoji></Button
+                >
                 {#if owner}
                     {#await Creators.getCreator(owner)}
                         <Spinning label="" />
@@ -1757,103 +1933,107 @@
                         <CreatorView {creator} />
                     {/await}
                 {/if}
-            {:else}
-                <Button
-                    tip={$locales.get((l) => l.ui.project.button.copy)}
-                    action={() => toClipboard(project.toWordplay())}
-                    ><Emoji>{COPY_SYMBOL}</Emoji></Button
-                >
-                {#if shareable}
+                {#if editable}
+                    <TextField
+                        text={project.getName()}
+                        description={$locales.get(
+                            (l) => l.ui.project.field.name.description,
+                        )}
+                        placeholder={$locales.get(
+                            (l) => l.ui.project.field.name.placeholder,
+                        )}
+                        changed={(name) =>
+                            Projects.reviseProject(project.withName(name))}
+                        max="10em"
+                    />
+                {:else}{project.getName()}{/if}
+                {#each sources as source, index}
+                    {@const tile = layout.getTileWithID(
+                        Layout.getSourceID(index),
+                    )}
+                    {#if tile}
+                        <!-- Mini source view output is visible when collapsed, or if its main, when output is collapsed. -->
+                        <SourceTileToggle
+                            {project}
+                            {source}
+                            expanded={tile.mode === Mode.Expanded}
+                            toggle={() => toggleTile(tile)}
+                        />
+                    {/if}
+                {/each}
+                {#if editable && layout.hasVisibleCollapsedSource()}
+                    <Separator />
+                {/if}
+                {#if editable}
+                    <Button
+                        uiid="addSource"
+                        tip={$locales.get((l) => l.ui.project.button.addSource)}
+                        action={addSource}
+                        >+<Emoji>{Glyphs.Program.symbols}</Emoji></Button
+                    >{/if}
+                {#each layout.getNonSources() as tile}
+                    <!-- No need to show the tile if not visible when not editable. -->
+                    {#if tile.isVisibleCollapsed(editable)}
+                        <NonSourceTileToggle
+                            {project}
+                            {tile}
+                            on:toggle={() => toggleTile(tile)}
+                            notification={tile.kind === TileKind.Collaborate &&
+                                !!chat &&
+                                $user !== null &&
+                                chat.hasUnread($user.uid)}
+                        />
+                    {/if}
+                {/each}
+                <span class="right-align">
                     <Dialog
-                        description={$locales.get((l) => l.ui.dialog.share)}
+                        description={$locales.get((l) => l.ui.dialog.help)}
                         button={{
-                            tip: $locales.get(
-                                (l) => l.ui.project.button.showCollaborators,
-                            ),
-                            icon:
-                                project.isPublic() &&
-                                isFlagged(project.getFlags())
-                                    ? '‼️'
-                                    : '↗',
+                            tip: $locales.get(ShowKeyboardHelp.description),
+                            icon: ShowKeyboardHelp.symbol,
                             label: '',
-                        }}
+                        }}><Shortcuts /></Dialog
                     >
-                        <Sharing {project} />
-                    </Dialog>
-                {/if}
-                <Translate {project}></Translate>
-            {/if}
-
+                    <Toggle
+                        tips={$locales.get((l) => l.ui.tile.toggle.fullscreen)}
+                        on={browserFullscreen}
+                        command={browserFullscreen
+                            ? ExitFullscreen
+                            : EnterFullscreen}
+                        toggle={() => setBrowserFullscreen(!browserFullscreen)}
+                    >
+                        <FullscreenIcon />
+                    </Toggle>
+                </span>
+            </div>
             {#if editable}
-                <TextField
-                    text={project.getName()}
-                    description={$locales.get(
-                        (l) => l.ui.project.field.name.description,
-                    )}
-                    placeholder={$locales.get(
-                        (l) => l.ui.project.field.name.placeholder,
-                    )}
-                    changed={(name) =>
-                        Projects.reviseProject(project.withName(name))}
-                    max="10em"
-                />
-            {:else}{project.getName()}{/if}
-            {#if editable && layout.hasVisibleCollapsedSource()}
-                <Separator />
+                <div class="footer-row">
+                    {#if shareable}
+                        <Dialog
+                            description={$locales.get((l) => l.ui.dialog.share)}
+                            button={{
+                                tip: $locales.get(
+                                    (l) => l.ui.project.button.share.tip,
+                                ),
+                                icon:
+                                    project.isPublic() &&
+                                    isFlagged(project.getFlags())
+                                        ? '‼️'
+                                        : '↗',
+                                label: $locales.get(
+                                    (l) => l.ui.project.button.share.label,
+                                ),
+                            }}
+                        >
+                            <Sharing {project} />
+                        </Dialog>
+                    {/if}
+                    <Separator />
+                    <Translate {project}></Translate>
+                    <Separator />
+                    <Checkpoints {project} bind:checkpoint></Checkpoints>
+                </div>
             {/if}
-            {#each project.getSources() as source, index}
-                {@const tile = layout.getTileWithID(Layout.getSourceID(index))}
-                {#if tile && tile.isCollapsed()}
-                    <!-- Mini source view output is visible when collapsed, or if its main, when output is collapsed. -->
-                    <SourceTileToggle
-                        {project}
-                        {source}
-                        expanded={tile.mode === Mode.Expanded}
-                        toggle={() => toggleTile(tile)}
-                    />
-                {/if}
-            {/each}
-            {#if editable}
-                <Button
-                    uiid="addSource"
-                    tip={$locales.get((l) => l.ui.project.button.addSource)}
-                    action={addSource}
-                    >+<Emoji>{Glyphs.Program.symbols}</Emoji></Button
-                >{/if}
-            {#each layout.getNonSources() as tile}
-                <!-- No need to show the tile if not visible when not editable. -->
-                {#if tile.isVisibleCollapsed(editable)}
-                    <NonSourceTileToggle
-                        {project}
-                        {tile}
-                        on:toggle={() => toggleTile(tile)}
-                        notification={tile.kind === TileKind.Collaborate &&
-                            !!chat &&
-                            $user !== null &&
-                            chat.hasUnread($user.uid)}
-                    />
-                {/if}
-            {/each}
-            <span class="right-align">
-                <Dialog
-                    description={$locales.get((l) => l.ui.dialog.help)}
-                    button={{
-                        tip: $locales.get(ShowKeyboardHelp.description),
-                        icon: ShowKeyboardHelp.symbol,
-                        label: '',
-                    }}><Shortcuts /></Dialog
-                >
-                <Toggle
-                    tips={$locales.get((l) => l.ui.tile.toggle.fullscreen)}
-                    on={browserFullscreen}
-                    command={browserFullscreen
-                        ? ExitFullscreen
-                        : EnterFullscreen}
-                    toggle={() => setBrowserFullscreen(!browserFullscreen)}
-                >
-                    <FullscreenIcon />
-                </Toggle>
-            </span>
         </nav>
 
         <!-- Render the menu on top of the annotations -->
@@ -1995,8 +2175,26 @@
     }
 
     .footer {
-        border-bottom: var(--wordplay-border-color) solid
-            var(--wordplay-border-width);
         overflow-x: auto;
+        display: flex;
+        flex-direction: column;
+        gap: var(--wordplay-spacing);
+        align-items: flex-start;
+    }
+
+    .footer-row {
+        width: 100%;
+        display: flex;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        gap: var(--wordplay-spacing);
+        align-items: center;
+    }
+
+    .editor-warning {
+        width: 100%;
+        padding: var(--wordplay-spacing);
+        background: var(--wordplay-error);
+        color: var(--wordplay-background);
     }
 </style>

@@ -15,12 +15,12 @@ import {
     getBestSupportedLocales,
     type Template,
 } from '../locale/LocaleText';
-import ProjectsDatabase from './ProjectsDatabase.svelte';
+import ProjectsDatabase from './projects/ProjectsDatabase.svelte';
 import LocalesDatabase from './LocalesDatabase';
-import SettingsDatabase from './SettingsDatabase';
-import GalleryDatabase from './GalleryDatabase.svelte';
+import SettingsDatabase from './settings/SettingsDatabase';
+import GalleryDatabase from './galleries/GalleryDatabase.svelte';
 import { ChatDatabase } from './ChatDatabase.svelte';
-import CreatorDatabase, { CreatorCollection } from './CreatorDatabase';
+import CreatorDatabase, { CreatorCollection } from './creators/CreatorDatabase';
 import DefaultLocale from '../locale/DefaultLocale';
 
 export enum SaveStatus {
@@ -251,8 +251,6 @@ export const mic = Settings.settings.mic.value;
 export const blocks = Settings.settings.blocks.value;
 export const localized = Settings.settings.localized.value;
 export const status = DB.Status;
-export const editableProjects = Projects.allEditableProjects;
-export const archivedProjects = Projects.allArchivedProjects;
 
 if (import.meta.hot) {
     import.meta.hot.on('locales-update', () => {

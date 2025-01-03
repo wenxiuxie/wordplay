@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type { Creator } from '@db/CreatorDatabase';
+    import type { Creator } from '@db/creators/CreatorDatabase';
     import Feedback from './Feedback.svelte';
     import { locales } from '@db/Database';
 
@@ -26,7 +26,9 @@
     >{#if creator}<span
             class="name"
             style:animation-delay={`${Math.random() * 1000}ms`}
-            >{creator.getName() ?? '😃'}</span
+            >{creator.getName() === null || creator.getName() === ''
+                ? '😃'
+                : creator.getName()}</span
         >{/if}{#if creator}
         {username.length < 10
             ? username
